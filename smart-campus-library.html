@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Smart Campus Library — An-Najah University</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#080a0f;--surface:#0f1219;--surface2:#161b26;--surface3:#1d2335;
+  --border:#252c3d;--border2:#2e3750;
+  --gold:#d4a847;--gold2:#f0c96a;--gold-dim:rgba(212,168,71,0.12);--gold-glow:rgba(212,168,71,0.25);
+  --text:#dde2ef;--muted:#5f6b88;--muted2:#8892aa;
+  --green:#3ecf8e;--green-dim:rgba(62,207,142,0.12);
+  --red:#f06060;--red-dim:rgba(240,96,96,0.12);
+  --blue:#5b9cf6;--blue-dim:rgba(91,156,246,0.12);
+  --amber:#f0a830;--r:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',serif;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(212,168,71,0.08),transparent);}
+.login-wrap{width:100%;max-width:420px;}
+.login-brand{text-align:center;margin-bottom:36px;}
+.login-brand .emblem{font-size:3rem;margin-bottom:10px;display:block;filter:drop-shadow(0 0 20px var(--gold-glow));}
+.login-brand h1{font-size:2.2rem;color:var(--gold2);letter-spacing:0.5px;}
+.login-brand p{font-size:0.82rem;color:var(--muted2);margin-top:4px;letter-spacing:0.5px;}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden;}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.login-tabs{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:24px;}
+.login-tab{flex:1;padding:10px;text-align:center;cursor:pointer;font-size:0.85rem;background:transparent;color:var(--muted2);border:none;font-family:'Outfit',sans-serif;transition:all 0.2s;}
+.login-tab.active{background:var(--gold);color:#080a0f;font-weight:600;}
+.hint-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:14px;font-size:0.78rem;color:var(--muted2);line-height:1.8;}
+.hint-box strong{color:var(--gold);}
+
+/* APP */
+#app-screen{display:none;min-height:100vh;}
+.layout{display:flex;min-height:100vh;}
+.sidebar{width:230px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;}
+.main{margin-left:230px;flex:1;min-height:100vh;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+.page-body{padding:28px;}
+.sb-brand{padding:20px 18px 18px;border-bottom:1px solid var(--border);}
+.sb-brand h2{font-size:1.1rem;color:var(--gold);font-family:'Cormorant Garamond',serif;font-weight:600;}
+.sb-brand p{font-size:0.7rem;color:var(--muted);margin-top:2px;letter-spacing:0.5px;}
+.sb-nav{flex:1;padding:12px 0;overflow-y:auto;}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 18px;cursor:pointer;font-size:0.87rem;color:var(--muted2);border-left:2px solid transparent;transition:all 0.18s;}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+.nav-item.active{color:var(--gold);border-left-color:var(--gold);background:var(--gold-dim);}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:0.65rem;font-weight:700;padding:2px 6px;border-radius:10px;}
+.sb-footer{padding:14px 18px;border-top:1px solid var(--border);}
+.user-chip{display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);}
+.av{width:34px;height:34px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;color:var(--gold);flex-shrink:0;}
+.av-lg{width:52px;height:52px;font-size:1.1rem;}
+.chip-name{font-size:0.83rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chip-role{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
+.tb-title{font-size:1.35rem;color:var(--gold2);font-family:'Cormorant Garamond',serif;}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.icon-btn{width:36px;height:36px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;position:relative;transition:all 0.2s;}
+.icon-btn:hover{border-color:var(--gold);}
+.notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1px solid var(--bg);}
+
+/* COMPONENTS */
+.btn{padding:9px 18px;border-radius:8px;font-size:0.84rem;font-weight:500;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all 0.18s;display:inline-flex;align-items:center;gap:6px;}
+.btn-gold{background:var(--gold);color:#080a0f;}
+.btn-gold:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 4px 16px var(--gold-glow);}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--muted2);}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+.btn-ghost{background:transparent;border:none;color:var(--muted2);padding:6px 10px;}
+.btn-ghost:hover{color:var(--text);}
+.btn-danger{background:var(--red-dim);border:1px solid rgba(240,96,96,0.3);color:var(--red);}
+.btn-danger:hover{background:rgba(240,96,96,0.2);}
+.btn-green{background:var(--green-dim);border:1px solid rgba(62,207,142,0.3);color:var(--green);}
+.btn-sm{padding:5px 12px;font-size:0.78rem;}
+.btn-xs{padding:3px 9px;font-size:0.73rem;}
+label{font-size:0.78rem;color:var(--muted2);display:block;margin-bottom:5px;letter-spacing:0.3px;}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 13px;font-size:0.85rem;font-family:'Outfit',sans-serif;width:100%;outline:none;transition:border 0.2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+select option{background:var(--surface2);}
+.fg{margin-bottom:14px;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;}
+.card-title{font-size:1rem;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:0.72rem;font-weight:500;}
+.bg{background:var(--green-dim);color:var(--green);}
+.br{background:var(--red-dim);color:var(--red);}
+.bb{background:var(--blue-dim);color:var(--blue);}
+.by{background:var(--gold-dim);color:var(--gold);}
+.ba{background:rgba(240,168,48,0.12);color:var(--amber);}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:9px 14px;font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;border-bottom:1px solid var(--border);font-family:'Outfit',sans-serif;font-weight:500;}
+td{padding:11px 14px;font-size:0.84rem;border-bottom:1px solid rgba(255,255,255,0.03);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,0.015);}
+.td-book strong{display:block;font-size:0.86rem;margin-bottom:1px;}
+.td-book span{font-size:0.75rem;color:var(--muted2);}
+.search-wrap{position:relative;margin-bottom:18px;}
+.search-wrap input{padding-left:40px;}
+.search-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:0.95rem;pointer-events:none;}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+.fpill{padding:5px 14px;border-radius:20px;font-size:0.78rem;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'Outfit',sans-serif;transition:all 0.18s;}
+.fpill:hover,.fpill.on{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden;}
+.stat::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);}
+.stat-n{font-size:2rem;font-weight:700;font-family:'Cormorant Garamond',serif;color:var(--gold2);}
+.stat-l{font-size:0.75rem;color:var(--muted);margin-top:3px;}
+.stat-i{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:1.6rem;opacity:0.18;}
+.stat-red .stat-n{color:var(--red);}
+.stat-red::after{background:linear-gradient(90deg,var(--red),transparent);}
+.stat-green .stat-n{color:var(--green);}
+.stat-green::after{background:linear-gradient(90deg,var(--green),transparent);}
+.books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:15px;}
+.book-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:all 0.2s;display:flex;flex-direction:column;gap:10px;}
+.book-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,0.35);}
+.book-cover{height:100px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;background:linear-gradient(135deg,var(--surface2),var(--surface3));border:1px solid var(--border);flex-shrink:0;}
+.book-title{font-size:0.9rem;font-weight:600;line-height:1.35;flex:1;}
+.book-author{font-size:0.78rem;color:var(--muted2);}
+.book-foot{display:flex;align-items:center;justify-content:space-between;}
+.book-acts{display:flex;gap:7px;margin-top:4px;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);padding:16px;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;position:relative;}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);border-radius:16px 16px 0 0;}
+.modal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.modal-t{font-size:1.25rem;color:var(--gold);}
+.close{background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;padding:4px;}
+.close:hover{color:var(--text);}
+.toast{position:fixed;bottom:22px;right:22px;z-index:999;padding:11px 18px;border-radius:10px;font-size:0.84rem;font-weight:500;animation:toUp 0.3s ease;box-shadow:0 8px 24px rgba(0,0,0,0.4);}
+.t-ok{background:#1a3d2e;border:1px solid var(--green);color:var(--green);}
+.t-err{background:#3d1a1a;border:1px solid var(--red);color:var(--red);}
+.t-warn{background:#3d2e1a;border:1px solid var(--amber);color:var(--amber);}
+@keyframes toUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.notif-item{display:flex;gap:12px;padding:13px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);margin-bottom:9px;}
+.notif-item.unread{border-color:rgba(212,168,71,0.25);background:var(--gold-dim);}
+.ndot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:5px;}
+.ndot.r{opacity:0;}
+.empty{text-align:center;padding:52px 20px;color:var(--muted2);}
+.empty-ico{font-size:2.8rem;margin-bottom:12px;}
+.empty p{font-size:0.87rem;}
+.ph{margin-bottom:24px;}
+.ph h1{font-size:1.9rem;color:var(--gold2);}
+.ph p{font-size:0.83rem;color:var(--muted2);margin-top:3px;}
+.ps{background:var(--surface2);border-radius:8px;padding:14px;text-align:center;border:1px solid var(--border);}
+.ps .n{font-size:1.8rem;font-weight:700;font-family:'Cormorant Garamond',serif;}
+.ps .l{font-size:0.72rem;color:var(--muted);margin-top:2px;}
+.divider{height:1px;background:var(--border);margin:20px 0;}
+.fine-ok{color:var(--green);font-weight:600;}
+.fine-bad{color:var(--red);font-weight:600;}
+.warn-box{background:var(--red-dim);border:1px solid rgba(240,96,96,0.3);border-radius:8px;padding:13px 16px;margin-bottom:18px;font-size:0.85rem;color:var(--red);}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-brand">
+      <span class="emblem">📚</span>
+      <h1>Smart Campus Library</h1>
+      <p>AN-NAJAH NATIONAL UNIVERSITY</p>
+    </div>
+    <div class="login-card">
+      <div class="login-tabs">
+        <button class="login-tab active" id="tab-l" onclick="switchTab('login')">Sign In</button>
+        <button class="login-tab" id="tab-r" onclick="switchTab('register')">Register</button>
+      </div>
+      <div id="auth-body"></div>
+    </div>
+    <div class="hint-box">
+      <strong>Demo Accounts:</strong><br>
+      Admin → <strong>admin@najah.edu</strong> / <strong>admin123</strong><br>
+      User &nbsp;→ <strong>ahmad@najah.edu</strong> / <strong>user123</strong>
+    </div>
+  </div>
+</div>
+
+<div id="app-screen">
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sb-brand">
+        <h2>📚 SCL System</h2>
+        <p>AN-NAJAH UNIVERSITY</p>
+      </div>
+      <nav class="sb-nav" id="sb-nav"></nav>
+      <div class="sb-footer">
+        <div class="user-chip" id="user-chip"></div>
+        <button class="btn btn-outline" style="width:100%;margin-top:10px;font-size:0.8rem;justify-content:center" onclick="logout()">Sign Out</button>
+      </div>
+    </aside>
+    <div class="main">
+      <div class="topbar">
+        <div class="tb-title" id="tb-title">Library</div>
+        <div class="tb-right" id="tb-right"></div>
+      </div>
+      <div class="page-body" id="page-body"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════
+//  DEFAULT DATA
+// ════════════════════════════════════
+const DEFAULT_USERS=[
+  {id:'u1',name:'Admin User',email:'admin@najah.edu',password:'admin123',role:'admin'},
+  {id:'u2',name:'Ahmad Khalil',email:'ahmad@najah.edu',password:'user123',role:'user'},
+  {id:'u3',name:'Sara Nasser',email:'sara@najah.edu',password:'user123',role:'user'},
+];
+const DEFAULT_BOOKS=[
+  {id:'b1',title:'Clean Code',author:'Robert C. Martin',isbn:'978-0132350884',category:'Programming',available:3,total:5,desc:'Agile software craftsmanship handbook.'},
+  {id:'b2',title:'The Pragmatic Programmer',author:'Andrew Hunt',isbn:'978-0201616224',category:'Programming',available:2,total:3,desc:'From journeyman to master.'},
+  {id:'b3',title:'Design Patterns',author:'Gang of Four',isbn:'978-0201633610',category:'Software Engineering',available:0,total:2,desc:'Reusable object-oriented software elements.'},
+  {id:'b4',title:'Introduction to Algorithms',author:'Cormen et al.',isbn:'978-0262033848',category:'CS Theory',available:4,total:4,desc:'Comprehensive algorithms guide.'},
+  {id:'b5',title:'Database System Concepts',author:'Silberschatz',isbn:'978-0073523323',category:'Databases',available:1,total:3,desc:'Fundamental database system concepts.'},
+  {id:'b6',title:'Operating System Concepts',author:'Silberschatz',isbn:'978-1119800361',category:'Systems',available:2,total:2,desc:'OS fundamentals — the dinosaur book.'},
+  {id:'b7',title:'Computer Networks',author:'Andrew Tanenbaum',isbn:'978-0132126953',category:'Networking',available:0,total:2,desc:'Comprehensive networking guide.'},
+  {id:'b8',title:'Artificial Intelligence',author:'Russell & Norvig',isbn:'978-0136042594',category:'AI',available:3,total:3,desc:'A modern approach to AI.'},
+  {id:'b9',title:'Software Engineering',author:'Ian Sommerville',isbn:'978-0133943030',category:'Software Engineering',available:2,total:2,desc:'Modern software development practices.'},
+  {id:'b10',title:'Computer Organization',author:'Patterson & Hennessy',isbn:'978-0128122754',category:'Systems',available:1,total:2,desc:'Hardware-software interface.'},
+];
+const DEFAULT_BORROWINGS=[
+  {id:'br1',userId:'u2',bookId:'b3',borrowDate:'2026-04-20',dueDate:'2026-05-04',returnDate:null,status:'active'},
+  {id:'br2',userId:'u3',bookId:'b7',borrowDate:'2026-04-10',dueDate:'2026-04-24',returnDate:null,status:'active'},
+  {id:'br3',userId:'u2',bookId:'b1',borrowDate:'2026-03-01',dueDate:'2026-03-15',returnDate:'2026-03-14',status:'returned'},
+];
+const DEFAULT_RESERVATIONS=[
+  {id:'r1',userId:'u2',bookId:'b7',reserveDate:'2026-05-01',status:'waiting'},
+];
+const DEFAULT_NOTIFS=[
+  {id:'n1',userId:'u2',msg:'Your book "Design Patterns" is due on 2026-05-04. Return on time to avoid fines.',type:'due',read:false,date:'2026-05-01'},
+  {id:'n2',userId:'u3',msg:'"Computer Networks" is overdue. A fine of 2 NIS/day is accumulating.',type:'overdue',read:false,date:'2026-04-25'},
+];
+
+// ════════════════════════════════════
+//  DB (localStorage)
+// ════════════════════════════════════
+let DB={
+  users:      JSON.parse(localStorage.getItem('scl_u') || JSON.stringify(DEFAULT_USERS)),
+  books:      JSON.parse(localStorage.getItem('scl_b') || JSON.stringify(DEFAULT_BOOKS)),
+  borrowings: JSON.parse(localStorage.getItem('scl_br')|| JSON.stringify(DEFAULT_BORROWINGS)),
+  reservations:JSON.parse(localStorage.getItem('scl_r')|| JSON.stringify(DEFAULT_RESERVATIONS)),
+  notifs:     JSON.parse(localStorage.getItem('scl_n') || JSON.stringify(DEFAULT_NOTIFS)),
+};
+function save(){
+  localStorage.setItem('scl_u', JSON.stringify(DB.users));
+  localStorage.setItem('scl_b', JSON.stringify(DB.books));
+  localStorage.setItem('scl_br',JSON.stringify(DB.borrowings));
+  localStorage.setItem('scl_r', JSON.stringify(DB.reservations));
+  localStorage.setItem('scl_n', JSON.stringify(DB.notifs));
+}
+function uid(){ return Math.random().toString(36).slice(2)+'_'+Date.now(); }
+function today(){ return new Date().toISOString().split('T')[0]; }
+function due14(){ const d=new Date(); d.setDate(d.getDate()+14); return d.toISOString().split('T')[0]; }
+function fine(dueDate, returnDate){
+  const days=Math.max(0,Math.floor((new Date(returnDate||today())-new Date(dueDate))/86400000));
+  return days*2;
+}
+
+// ════════════════════════════════════
+//  SESSION
+// ════════════════════════════════════
+let CU = JSON.parse(sessionStorage.getItem('scl_cu')||'null'); // current user
+let PAGE = 'books';
+let bSearch='', bCatFilter='All';
+
+// ════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════
+function toast(msg,type='ok'){
+  const t=document.createElement('div');
+  t.className=`toast t-${type}`;t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.transition='opacity 0.3s';t.style.opacity='0';},2700);
+  setTimeout(()=>t.remove(),3100);
+}
+
+// ════════════════════════════════════
+//  MODAL
+// ════════════════════════════════════
+function modal(html){
+  document.querySelector('.overlay')?.remove();
+  const ov=document.createElement('div');
+  ov.className='overlay';
+  ov.innerHTML=`<div class="modal">${html}</div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+}
+function closeModal(){ document.querySelector('.overlay')?.remove(); }
+
+// ════════════════════════════════════
+//  INIT
+// ════════════════════════════════════
+function init(){
+  renderLoginForm('login');
+  if(CU){ showApp(); }
+}
+
+function renderLoginForm(mode){
+  document.getElementById('auth-body').innerHTML = mode==='login' ? `
+    <div class="fg"><label>Email</label><input id="f-email" type="email" placeholder="you@najah.edu"/></div>
+    <div class="fg"><label>Password</label><input id="f-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="btn btn-gold" style="width:100%;justify-content:center" onclick="doLogin()">Sign In →</button>
+  ` : `
+    <div class="fg"><label>Full Name</label><input id="f-name" type="text" placeholder="Your full name"/></div>
+    <div class="fg"><label>Email</label><input id="f-email" type="email" placeholder="you@najah.edu"/></div>
+    <div class="fg"><label>Password</label><input id="f-pass" type="password" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')doRegister()"/></div>
+    <button class="btn btn-gold" style="width:100%;justify-content:center" onclick="doRegister()">Create Account →</button>
+  `;
+}
+
+window.switchTab=(t)=>{
+  document.getElementById('tab-l').classList.toggle('active',t==='login');
+  document.getElementById('tab-r').classList.toggle('active',t==='register');
+  renderLoginForm(t);
+};
+
+window.doLogin=()=>{
+  const email=document.getElementById('f-email').value.trim();
+  const pass=document.getElementById('f-pass').value;
+  const u=DB.users.find(u=>u.email===email&&u.password===pass);
+  if(!u){toast('Invalid email or password','err');return;}
+  CU=u; sessionStorage.setItem('scl_cu',JSON.stringify(u));
+  showApp(); toast(`Welcome back, ${u.name}!`);
+};
+
+window.doRegister=()=>{
+  const name=document.getElementById('f-name')?.value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  const pass=document.getElementById('f-pass').value;
+  if(!name||!email||!pass){toast('Please fill all fields','warn');return;}
+  if(pass.length<6){toast('Password must be at least 6 characters','warn');return;}
+  if(DB.users.find(u=>u.email===email)){toast('Email already registered','err');return;}
+  const u={id:uid(),name,email,password:pass,role:'user'};
+  DB.users.push(u);save();
+  CU=u;sessionStorage.setItem('scl_cu',JSON.stringify(u));
+  showApp();toast(`Welcome, ${u.name}!`);
+};
+
+window.logout=()=>{
+  CU=null;sessionStorage.removeItem('scl_cu');
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app-screen').style.display='none';
+  switchTab('login');
+};
+
+function showApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-screen').style.display='block';
+  PAGE=CU.role==='admin'?'dashboard':'books';
+  renderApp();
+}
+
+// ════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════
+function renderApp(){ renderSidebar(); renderTopbar(); renderPage(); }
+
+function ini(name){ return (name||'U').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+
+function renderSidebar(){
+  const isA=CU.role==='admin';
+  const unread=DB.notifs.filter(n=>n.userId===CU.id&&!n.read).length;
+  const items=isA?[
+    {id:'dashboard',i:'📊',l:'Dashboard'},
+    {id:'books',i:'📚',l:'Books'},
+    {id:'adm_borrow',i:'🔄',l:'All Borrowings'},
+    {id:'adm_res',i:'📋',l:'Reservations'},
+    {id:'adm_users',i:'👥',l:'Users'},
+  ]:[
+    {id:'books',i:'📚',l:'Browse Books'},
+    {id:'my_borrow',i:'📖',l:'My Borrowings'},
+    {id:'my_res',i:'📋',l:'My Reservations'},
+    {id:'notifs',i:'🔔',l:'Notifications',badge:unread},
+    {id:'profile',i:'👤',l:'My Profile'},
+  ];
+  document.getElementById('sb-nav').innerHTML=items.map(n=>`
+    <div class="nav-item ${PAGE===n.id?'active':''}" onclick="goTo('${n.id}')">
+      <span>${n.i}</span><span>${n.l}</span>
+      ${n.badge?`<span class="nav-badge">${n.badge}</span>`:''}
+    </div>`).join('');
+  document.getElementById('user-chip').innerHTML=`
+    <div class="av">${ini(CU.name)}</div>
+    <div><div class="chip-name">${CU.name}</div><div class="chip-role">${CU.role}</div></div>`;
+}
+
+function renderTopbar(){
+  const titles={dashboard:'Dashboard',books:'Browse Books',my_borrow:'My Borrowings',my_res:'My Reservations',notifs:'Notifications',profile:'My Profile',adm_borrow:'All Borrowings',adm_res:'Reservations',adm_users:'User Management'};
+  document.getElementById('tb-title').textContent=titles[PAGE]||'Library';
+  const unread=DB.notifs.filter(n=>n.userId===CU.id&&!n.read).length;
+  document.getElementById('tb-right').innerHTML=CU.role==='user'?`
+    <div class="icon-btn" onclick="goTo('notifs')" title="Notifications">🔔${unread?'<span class="notif-dot"></span>':''}</div>`:'';
+}
+
+window.goTo=(p)=>{ PAGE=p; renderApp(); };
+
+function renderPage(){
+  const el=document.getElementById('page-body');
+  const pages={
+    dashboard:pgDashboard, books:pgBooks,
+    my_borrow:pgMyBorrow, my_res:pgMyRes,
+    notifs:pgNotifs, profile:pgProfile,
+    adm_borrow:pgAdmBorrow, adm_res:pgAdmRes, adm_users:pgAdmUsers,
+  };
+  el.innerHTML=(pages[PAGE]||pgBooks)();
+}
+
+// ════════════════════════════════════
+//  PAGES
+// ════════════════════════════════════
+const EMOJI={Programming:'💻','Software Engineering':'⚙️','CS Theory':'🖥️',Databases:'🗄️',Systems:'🔧',Networking:'🌐',AI:'🤖',General:'📖'};
+
+function pgDashboard(){
+  const brs=DB.borrowings;
+  const now=new Date();
+  const active=brs.filter(b=>b.status==='active');
+  const overdue=active.filter(b=>new Date(b.dueDate)<now);
+  const totalFine=brs.reduce((s,b)=>s+(b.status==='active'?fine(b.dueDate):fine(b.dueDate,b.returnDate)),0);
+  const avail=DB.books.reduce((s,b)=>s+b.available,0);
+  const rows=active.map(b=>({...b,book:DB.books.find(bk=>bk.id===b.bookId),user:DB.users.find(u=>u.id===b.userId),f:fine(b.dueDate)}));
+  return `
+  <div class="ph"><h1>Admin Dashboard</h1><p>Real-time library overview</p></div>
+  <div class="stats-grid">
+    <div class="stat"><div class="stat-i">📚</div><div class="stat-n">${DB.books.length}</div><div class="stat-l">Total Books</div></div>
+    <div class="stat"><div class="stat-i">👥</div><div class="stat-n">${DB.users.filter(u=>u.role==='user').length}</div><div class="stat-l">Registered Users</div></div>
+    <div class="stat"><div class="stat-i">🔄</div><div class="stat-n">${active.length}</div><div class="stat-l">Active Borrowings</div></div>
+    <div class="stat stat-red"><div class="stat-i">⚠️</div><div class="stat-n">${overdue.length}</div><div class="stat-l">Overdue</div></div>
+  </div>
+  <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="stat stat-green"><div class="stat-i">✅</div><div class="stat-n">${avail}</div><div class="stat-l">Available Copies</div></div>
+    <div class="stat"><div class="stat-i">📋</div><div class="stat-n">${DB.reservations.filter(r=>r.status==='waiting').length}</div><div class="stat-l">Pending Reservations</div></div>
+    <div class="stat stat-red"><div class="stat-i">💰</div><div class="stat-n">${totalFine}</div><div class="stat-l">Total Fines (NIS)</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">🔄 Active Borrowings</div>
+    ${rows.length===0?'<div class="empty" style="padding:24px"><div class="empty-ico">📭</div><p>No active borrowings</p></div>':''}
+    ${rows.length>0?`<div class="tbl-wrap"><table>
+      <thead><tr><th>User</th><th>Book</th><th>Due Date</th><th>Fine</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>${rows.map(b=>`
+        <tr>
+          <td>${b.user?.name||'—'}</td>
+          <td class="td-book"><strong>${b.book?.title||'—'}</strong></td>
+          <td>${b.dueDate}</td>
+          <td class="${b.f>0?'fine-bad':'fine-ok'}">${b.f>0?b.f+' NIS':'—'}</td>
+          <td><span class="badge ${b.f>0?'br':'bb'}">${b.f>0?'Overdue':'Active'}</span></td>
+          <td><button class="btn btn-green btn-xs" onclick="adminReturn('${b.id}')">↩ Return</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>`:''}
+  </div>`;
+}
+
+function pgBooks(){
+  const cats=['All',...new Set(DB.books.map(b=>b.category))].sort();
+  const q=bSearch.toLowerCase();
+  const filtered=DB.books.filter(b=>{
+    const mq=!q||b.title.toLowerCase().includes(q)||b.author.toLowerCase().includes(q)||b.category.toLowerCase().includes(q)||b.isbn.includes(q);
+    return mq&&(bCatFilter==='All'||b.category===bCatFilter);
+  });
+  return `
+  <div class="ph"><h1>Book Catalogue</h1><p>${DB.books.length} books in our collection</p></div>
+  <div class="search-wrap">
+    <span class="search-ico">🔍</span>
+    <input id="bs-inp" type="text" placeholder="Search title, author, ISBN, category…" value="${bSearch}" oninput="doSearch(this.value)"/>
+  </div>
+  <div class="filter-row">
+    ${cats.map(c=>`<button class="fpill ${bCatFilter===c?'on':''}" onclick="doCat('${c}')">${c}</button>`).join('')}
+  </div>
+  ${filtered.length===0?'<div class="empty"><div class="empty-ico">📭</div><p>No books match your search</p></div>':''}
+  <div class="books-grid">
+    ${filtered.map(b=>{
+      const ico=EMOJI[b.category]||'📘';
+      const myBr=CU.role==='user'&&DB.borrowings.find(br=>br.userId===CU.id&&br.bookId===b.id&&br.status==='active');
+      const myR=CU.role==='user'&&DB.reservations.find(r=>r.userId===CU.id&&r.bookId===b.id&&r.status==='waiting');
+      return `
+      <div class="book-card">
+        <div class="book-cover">${ico}</div>
+        <div class="book-title">${b.title}</div>
+        <div class="book-author">${b.author}</div>
+        <div class="book-foot">
+          <span class="badge ${b.available>0?'bg':'br'}">${b.available>0?b.available+' available':'Unavailable'}</span>
+          <span style="font-size:0.72rem;color:var(--muted)">${b.category}</span>
+        </div>
+        <div class="book-acts">
+          ${CU.role==='user'
+            ?myBr?`<span class="badge bb" style="padding:5px 10px">Borrowed</span>`
+              :b.available>0?`<button class="btn btn-gold btn-sm" onclick="doBorrow('${b.id}')">Borrow</button>`
+              :myR?`<span class="badge ba" style="padding:5px 10px">In Waitlist</span>`
+              :`<button class="btn btn-outline btn-sm" onclick="doReserve('${b.id}')">Reserve</button>`
+            :`<button class="btn btn-outline btn-sm" onclick="openEdit('${b.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="doDeleteBook('${b.id}')">Delete</button>`
+          }
+        </div>
+      </div>`;
+    }).join('')}
+  </div>
+  ${CU.role==='admin'?`<div style="margin-top:22px"><button class="btn btn-gold" onclick="openAddBook()">+ Add Book</button></div>`:''}`;
+}
+
+function pgMyBorrow(){
+  const all=DB.borrowings.filter(b=>b.userId===CU.id).map(b=>({...b,book:DB.books.find(bk=>bk.id===b.bookId),f:b.status==='active'?fine(b.dueDate):fine(b.dueDate,b.returnDate)}));
+  const active=all.filter(b=>b.status==='active');
+  const hist=all.filter(b=>b.status==='returned');
+  const tf=active.reduce((s,b)=>s+b.f,0);
+  return `
+  <div class="ph"><h1>My Borrowings</h1><p>Track your books and fines</p></div>
+  ${tf>0?`<div class="warn-box">⚠️ Outstanding fines: <strong>${tf} NIS</strong> — return overdue books to stop charges.</div>`:''}
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title">📖 Active (${active.length})</div>
+    ${active.length===0?'<div class="empty" style="padding:24px"><div class="empty-ico">📭</div><p>No active borrowings</p></div>':''}
+    ${active.length>0?`<div class="tbl-wrap"><table>
+      <thead><tr><th>Book</th><th>Borrowed</th><th>Due Date</th><th>Fine</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>${active.map(b=>`
+        <tr>
+          <td class="td-book"><strong>${b.book?.title||'—'}</strong><span>${b.book?.author||''}</span></td>
+          <td>${b.borrowDate}</td><td>${b.dueDate}</td>
+          <td class="${b.f>0?'fine-bad':'fine-ok'}">${b.f>0?b.f+' NIS':'—'}</td>
+          <td><span class="badge ${b.f>0?'br':'bb'}">${b.f>0?'Overdue':'Active'}</span></td>
+          <td><button class="btn btn-green btn-sm" onclick="doReturn('${b.id}')">↩ Return</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>`:''}
+  </div>
+  <div class="card">
+    <div class="card-title">🕓 History (${hist.length})</div>
+    ${hist.length===0?'<div class="empty" style="padding:24px"><div class="empty-ico">📭</div><p>No history yet</p></div>':''}
+    ${hist.length>0?`<div class="tbl-wrap"><table>
+      <thead><tr><th>Book</th><th>Borrowed</th><th>Returned</th><th>Fine Paid</th></tr></thead>
+      <tbody>${hist.map(b=>`
+        <tr>
+          <td class="td-book"><strong>${b.book?.title||'—'}</strong></td>
+          <td>${b.borrowDate}</td><td>${b.returnDate||'—'}</td>
+          <td class="${b.f>0?'fine-bad':'fine-ok'}">${b.f>0?b.f+' NIS':'Free'}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>`:''}
+  </div>`;
+}
+
+function pgMyRes(){
+  const res=DB.reservations.filter(r=>r.userId===CU.id).map(r=>({...r,book:DB.books.find(b=>b.id===r.bookId)}));
+  return `
+  <div class="ph"><h1>My Reservations</h1><p>Waitlist for unavailable books</p></div>
+  ${res.length===0?'<div class="empty"><div class="empty-ico">📋</div><p>No active reservations</p></div>':''}
+  ${res.length>0?`<div class="card"><div class="tbl-wrap"><table>
+    <thead><tr><th>Book</th><th>Author</th><th>Reserved On</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>${res.map(r=>`
+      <tr>
+        <td class="td-book"><strong>${r.book?.title||'—'}</strong></td>
+        <td>${r.book?.author||'—'}</td>
+        <td>${r.reserveDate}</td>
+        <td><span class="badge ba">Waiting</span></td>
+        <td><button class="btn btn-danger btn-xs" onclick="doCancelRes('${r.id}')">Cancel</button></td>
+      </tr>`).join('')}
+    </tbody>
+  </table></div></div>`:''}
+  <div style="margin-top:16px"><button class="btn btn-outline" onclick="goTo('books')">← Browse Books</button></div>`;
+}
+
+function pgNotifs(){
+  const notifs=DB.notifs.filter(n=>n.userId===CU.id).sort((a,b)=>b.date.localeCompare(a.date));
+  const unread=notifs.filter(n=>!n.read).length;
+  return `
+  <div class="ph"><h1>Notifications</h1><p>${unread} unread</p></div>
+  ${unread>0?`<div style="margin-bottom:14px"><button class="btn btn-outline btn-sm" onclick="markAllRead()">✓ Mark all as read</button></div>`:''}
+  ${notifs.length===0?'<div class="empty"><div class="empty-ico">🔔</div><p>All caught up!</p></div>':''}
+  ${notifs.map(n=>`
+    <div class="notif-item ${!n.read?'unread':''}">
+      <div class="ndot ${n.read?'r':''}"></div>
+      <div style="flex:1">
+        <div style="font-size:0.85rem;line-height:1.4">${n.type==='overdue'?'⚠️':n.type==='due'?'⏰':'📢'} ${n.msg}</div>
+        <div style="font-size:0.73rem;color:var(--muted);margin-top:3px">${n.date}</div>
+      </div>
+      ${!n.read?`<button class="btn btn-ghost btn-xs" onclick="markRead('${n.id}')">✓</button>`:''}
+    </div>`).join('')}`;
+}
+
+function pgProfile(){
+  const brs=DB.borrowings.filter(b=>b.userId===CU.id);
+  const active=brs.filter(b=>b.status==='active').length;
+  const returned=brs.filter(b=>b.status==='returned').length;
+  const res=DB.reservations.filter(r=>r.userId===CU.id&&r.status==='waiting').length;
+  const fines=brs.filter(b=>b.status==='active').reduce((s,b)=>s+fine(b.dueDate),0);
+  return `
+  <div class="ph"><h1>My Profile</h1><p>Account information and reading stats</p></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+    <div class="card">
+      <div class="card-title">👤 Account Details</div>
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+        <div class="av av-lg">${ini(CU.name)}</div>
+        <div>
+          <div style="font-size:1rem;font-weight:600">${CU.name}</div>
+          <div style="font-size:0.8rem;color:var(--muted2)">${CU.email}</div>
+          <span class="badge by" style="margin-top:5px">${CU.role}</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="fg"><label>Full Name</label><input id="p-name" value="${CU.name}"/></div>
+      <div class="fg"><label>Email</label><input value="${CU.email}" disabled style="opacity:0.5"/></div>
+      <div class="fg"><label>New Password <span style="color:var(--muted)">(leave blank to keep)</span></label><input id="p-pass" type="password" placeholder="••••••••"/></div>
+      <button class="btn btn-gold" onclick="doUpdateProfile()">Save Changes</button>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 Reading Stats</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="ps"><div class="n" style="color:var(--blue)">${active}</div><div class="l">Active</div></div>
+        <div class="ps"><div class="n" style="color:var(--green)">${returned}</div><div class="l">Returned</div></div>
+        <div class="ps"><div class="n" style="color:var(--gold)">${res}</div><div class="l">Reserved</div></div>
+        <div class="ps"><div class="n" style="color:${fines>0?'var(--red)':'var(--green)'}">${fines}</div><div class="l">Fines (NIS)</div></div>
+      </div>
+      ${fines>0?`<div style="margin-top:14px;padding:12px;background:var(--red-dim);border-radius:8px;border:1px solid rgba(240,96,96,0.2);font-size:0.82rem;color:var(--red)">Outstanding fines: <strong>${fines} NIS</strong>. Please return overdue books.</div>`:''}
+    </div>
+  </div>`;
+}
+
+function pgAdmBorrow(){
+  const all=DB.borrowings.map(b=>({...b,book:DB.books.find(bk=>bk.id===b.bookId),user:DB.users.find(u=>u.id===b.userId),f:b.status==='active'?fine(b.dueDate):fine(b.dueDate,b.returnDate)})).sort((a,b)=>b.borrowDate.localeCompare(a.borrowDate));
+  return `
+  <div class="ph"><h1>All Borrowings</h1><p>${all.length} total records</p></div>
+  <div class="card"><div class="tbl-wrap"><table>
+    <thead><tr><th>User</th><th>Book</th><th>Borrowed</th><th>Due</th><th>Returned</th><th>Fine</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>${all.map(b=>`
+      <tr>
+        <td>${b.user?.name||'—'}</td>
+        <td class="td-book"><strong>${b.book?.title||'—'}</strong></td>
+        <td>${b.borrowDate}</td><td>${b.dueDate}</td>
+        <td>${b.returnDate||'—'}</td>
+        <td class="${b.f>0?'fine-bad':'fine-ok'}">${b.f>0?b.f+' NIS':'—'}</td>
+        <td><span class="badge ${b.status==='returned'?'bg':b.f>0?'br':'bb'}">${b.status}</span></td>
+        <td>${b.status==='active'?`<button class="btn btn-green btn-xs" onclick="adminReturn('${b.id}')">↩ Return</button>`:'—'}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table></div></div>`;
+}
+
+function pgAdmRes(){
+  const all=DB.reservations.map(r=>({...r,book:DB.books.find(b=>b.id===r.bookId),user:DB.users.find(u=>u.id===r.userId)}));
+  return `
+  <div class="ph"><h1>All Reservations</h1><p>${all.length} total</p></div>
+  ${all.length===0?'<div class="empty"><div class="empty-ico">📋</div><p>No reservations</p></div>':''}
+  ${all.length>0?`<div class="card"><div class="tbl-wrap"><table>
+    <thead><tr><th>User</th><th>Book</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>${all.map(r=>`
+      <tr>
+        <td>${r.user?.name||'—'}</td>
+        <td class="td-book"><strong>${r.book?.title||'—'}</strong></td>
+        <td>${r.reserveDate}</td>
+        <td><span class="badge ba">${r.status}</span></td>
+        <td><button class="btn btn-danger btn-xs" onclick="adminCancelRes('${r.id}')">Cancel</button></td>
+      </tr>`).join('')}
+    </tbody>
+  </table></div></div>`:''}`;
+}
+
+function pgAdmUsers(){
+  return `
+  <div class="ph"><h1>Users</h1><p>${DB.users.length} registered accounts</p></div>
+  <div class="card"><div class="tbl-wrap"><table>
+    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Active Loans</th><th>Action</th></tr></thead>
+    <tbody>${DB.users.map(u=>{
+      const loans=DB.borrowings.filter(b=>b.userId===u.id&&b.status==='active').length;
+      return `<tr>
+        <td><div style="display:flex;align-items:center;gap:10px"><div class="av" style="width:28px;height:28px;font-size:0.68rem">${ini(u.name)}</div>${u.name}</div></td>
+        <td style="color:var(--muted2)">${u.email}</td>
+        <td><span class="badge ${u.role==='admin'?'by':'bb'}">${u.role}</span></td>
+        <td>${loans>0?`<span class="badge bb">${loans}</span>`:'—'}</td>
+        <td>${u.role!=='admin'?`<button class="btn btn-danger btn-xs" onclick="doDeleteUser('${u.id}')">Delete</button>`:'—'}</td>
+      </tr>`;}).join('')}
+    </tbody>
+  </table></div></div>`;
+}
+
+// ════════════════════════════════════
+//  ACTIONS
+// ════════════════════════════════════
+window.doSearch=(v)=>{ bSearch=v; renderPage(); document.getElementById('bs-inp')?.focus(); };
+window.doCat=(c)=>{ bCatFilter=c; renderPage(); };
+
+window.doBorrow=(bookId)=>{
+  const book=DB.books.find(b=>b.id===bookId);
+  if(!book||book.available<=0){toast('Book not available','err');return;}
+  if(DB.borrowings.find(b=>b.userId===CU.id&&b.bookId===bookId&&b.status==='active')){toast('Already borrowed','warn');return;}
+  const br={id:uid(),userId:CU.id,bookId,borrowDate:today(),dueDate:due14(),returnDate:null,status:'active'};
+  DB.borrowings.push(br);
+  book.available--;
+  DB.notifs.push({id:uid(),userId:CU.id,msg:`You borrowed "${book.title}". Due: ${br.dueDate}. Return on time to avoid fines.`,type:'info',read:false,date:today()});
+  save();renderApp();toast(`Borrowed "${book.title}" — due ${br.dueDate}`);
+};
+
+window.doReturn=(brId)=>{
+  const br=DB.borrowings.find(b=>b.id===brId);
+  if(!br)return;
+  br.returnDate=today();br.status='returned';
+  const f=fine(br.dueDate,br.returnDate);
+  const book=DB.books.find(b=>b.id===br.bookId);
+  if(book)book.available++;
+  const nextRes=DB.reservations.find(r=>r.bookId===br.bookId&&r.status==='waiting');
+  if(nextRes)DB.notifs.push({id:uid(),userId:nextRes.userId,msg:`"${book?.title}" is now available! Visit the library to borrow it.`,type:'info',read:false,date:today()});
+  if(f>0)DB.notifs.push({id:uid(),userId:CU.id,msg:`Returned "${book?.title}" with a fine of ${f} NIS.`,type:'overdue',read:false,date:today()});
+  save();renderApp();toast(f>0?`Returned with fine: ${f} NIS`:'Returned successfully!',f>0?'warn':'ok');
+};
+
+window.adminReturn=(brId)=>{
+  const br=DB.borrowings.find(b=>b.id===brId);
+  if(!br)return;
+  br.returnDate=today();br.status='returned';
+  const f=fine(br.dueDate,br.returnDate);
+  const book=DB.books.find(b=>b.id===br.bookId);
+  if(book)book.available++;
+  save();renderApp();toast(`Returned. Fine: ${f} NIS`,f>0?'warn':'ok');
+};
+
+window.doReserve=(bookId)=>{
+  const book=DB.books.find(b=>b.id===bookId);
+  if(!book)return;
+  if(book.available>0){toast('Book is available — borrow it directly!','warn');return;}
+  if(DB.reservations.find(r=>r.userId===CU.id&&r.bookId===bookId&&r.status==='waiting')){toast('Already in your waitlist','warn');return;}
+  DB.reservations.push({id:uid(),userId:CU.id,bookId,reserveDate:today(),status:'waiting'});
+  DB.notifs.push({id:uid(),userId:CU.id,msg:`Added to waitlist for "${book.title}". We'll notify you when it's available.`,type:'info',read:false,date:today()});
+  save();renderApp();toast(`Added to waitlist for "${book.title}"`);
+};
+
+window.doCancelRes=(id)=>{ DB.reservations=DB.reservations.filter(r=>r.id!==id);save();renderApp();toast('Reservation cancelled.'); };
+window.adminCancelRes=(id)=>{ DB.reservations=DB.reservations.filter(r=>r.id!==id);save();renderApp();toast('Cancelled.'); };
+window.markRead=(id)=>{ const n=DB.notifs.find(n=>n.id===id);if(n)n.read=true;save();renderApp(); };
+window.markAllRead=()=>{ DB.notifs.filter(n=>n.userId===CU.id).forEach(n=>n.read=true);save();renderApp(); };
+
+window.doDeleteUser=(id)=>{
+  if(!confirm('Delete this user?'))return;
+  DB.users=DB.users.filter(u=>u.id!==id);save();renderApp();toast('User deleted.');
+};
+
+window.doUpdateProfile=()=>{
+  const name=document.getElementById('p-name').value.trim();
+  const pass=document.getElementById('p-pass').value;
+  if(!name){toast('Name cannot be empty','warn');return;}
+  if(pass&&pass.length<6){toast('Password too short (min 6)','warn');return;}
+  const u=DB.users.find(u=>u.id===CU.id);
+  if(u){u.name=name;if(pass)u.password=pass;CU.name=name;sessionStorage.setItem('scl_cu',JSON.stringify(CU));}
+  save();renderApp();toast('Profile updated!');
+};
+
+window.doDeleteBook=(id)=>{
+  if(!confirm('Delete this book from the catalogue?'))return;
+  DB.books=DB.books.filter(b=>b.id!==id);save();renderApp();toast('Book deleted.');
+};
+
+window.openAddBook=()=>{
+  const cats=[...new Set(DB.books.map(b=>b.category))];
+  modal(`
+    <div class="modal-h"><div class="modal-t">+ Add New Book</div><button class="close" onclick="closeModal()">✕</button></div>
+    <div class="fg2">
+      <div class="fg"><label>Title *</label><input id="nb-t" placeholder="Book title"/></div>
+      <div class="fg"><label>Author *</label><input id="nb-a" placeholder="Author name"/></div>
+    </div>
+    <div class="fg2">
+      <div class="fg"><label>ISBN *</label><input id="nb-i" placeholder="978-…"/></div>
+      <div class="fg"><label>Category</label><input id="nb-c" list="catl" placeholder="e.g. Programming"/>
+        <datalist id="catl">${cats.map(c=>`<option value="${c}">`).join('')}</datalist></div>
+    </div>
+    <div class="fg"><label>Total Copies</label><input id="nb-n" type="number" value="1" min="1"/></div>
+    <div class="fg"><label>Description</label><textarea id="nb-d" rows="3" placeholder="Short description…"></textarea></div>
+    <button class="btn btn-gold" style="width:100%;justify-content:center" onclick="submitAdd()">Add Book</button>`);
+};
+
+window.submitAdd=()=>{
+  const title=document.getElementById('nb-t').value.trim();
+  const author=document.getElementById('nb-a').value.trim();
+  const isbn=document.getElementById('nb-i').value.trim();
+  const category=document.getElementById('nb-c').value.trim()||'General';
+  const total=parseInt(document.getElementById('nb-n').value)||1;
+  const desc=document.getElementById('nb-d').value.trim();
+  if(!title||!author||!isbn){toast('Title, Author, and ISBN are required','warn');return;}
+  DB.books.push({id:uid(),title,author,isbn,category,available:total,total,desc});
+  save();closeModal();renderApp();toast(`"${title}" added!`);
+};
+
+window.openEdit=(id)=>{
+  const b=DB.books.find(b=>b.id===id);
+  if(!b)return;
+  modal(`
+    <div class="modal-h"><div class="modal-t">Edit Book</div><button class="close" onclick="closeModal()">✕</button></div>
+    <div class="fg"><label>Title</label><input id="eb-t" value="${b.title}"/></div>
+    <div class="fg"><label>Author</label><input id="eb-a" value="${b.author}"/></div>
+    <div class="fg2">
+      <div class="fg"><label>ISBN</label><input id="eb-i" value="${b.isbn}"/></div>
+      <div class="fg"><label>Category</label><input id="eb-c" value="${b.category}"/></div>
+    </div>
+    <div class="fg2">
+      <div class="fg"><label>Total Copies</label><input id="eb-n" type="number" value="${b.total}" min="1"/></div>
+      <div class="fg"><label>Available</label><input id="eb-av" type="number" value="${b.available}" min="0"/></div>
+    </div>
+    <div class="fg"><label>Description</label><textarea id="eb-d" rows="3">${b.desc||''}</textarea></div>
+    <button class="btn btn-gold" style="width:100%;justify-content:center" onclick="submitEdit('${id}')">Save Changes</button>`);
+};
+
+window.submitEdit=(id)=>{
+  const b=DB.books.find(b=>b.id===id);
+  if(!b)return;
+  b.title=document.getElementById('eb-t').value.trim()||b.title;
+  b.author=document.getElementById('eb-a').value.trim()||b.author;
+  b.isbn=document.getElementById('eb-i').value.trim()||b.isbn;
+  b.category=document.getElementById('eb-c').value.trim()||b.category;
+  b.total=parseInt(document.getElementById('eb-n').value)||b.total;
+  b.available=parseInt(document.getElementById('eb-av').value);
+  b.desc=document.getElementById('eb-d').value.trim();
+  save();closeModal();renderApp();toast('Book updated!');
+};
+
+// ════════════════════════════════════
+//  START
+// ════════════════════════════════════
+init();
+</script>
+</body>
+</html>
