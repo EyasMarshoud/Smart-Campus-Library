@@ -465,7 +465,7 @@ function pgBooks(){
   <div class="ph"><h1>Book Catalogue</h1><p>${DB.books.length} books in our collection</p></div>
   <div class="search-wrap">
     <span class="search-ico">🔍</span>
-    <input id="bs-inp" type="text" placeholder="Search title, author, ISBN, category…" value="${bSearch}" oninput="doSearch(this.value)"/>
+    <input id="bs-inp" type="text" dir="auto" placeholder="Search title, author, ISBN, category…"/>
   </div>
   <div class="filter-row">
     ${cats.map(c=>`<button class="fpill ${bCatFilter===c?'on':''}" onclick="doCat('${c}')">${c}</button>`).join('')}
